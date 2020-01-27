@@ -19,7 +19,17 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<User> getUserListOnline() {
+    public List<User> getUsersListOnline() {
         return userRepository.getUserListByStatus(Status.ONLINE);
+    }
+
+    @Override
+    public User createUser(User user) {
+        return userRepository.save(user);
+    }
+
+    @Override
+    public List<User> getUsersList() {
+        return userRepository.findAll();
     }
 }

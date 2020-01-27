@@ -32,3 +32,4 @@ build/
 
 # Project exclude paths
 /webapp/node_modules/
+debug.log

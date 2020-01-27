@@ -113,6 +113,14 @@ function getAvatarColor(messageSender) {
 //TODO
 function getUsersOnline(event) {
     let userList = stompClient.send("/chat.getUsersOnline");
+    console.log("get 47: " + userList.get());
+    console.log("size 47: " + userList.size());
+
+
+    let tr = document.createElement('tr');
+    let td = document.createElement('td');
+
+    // userListArea
 
 
 }
