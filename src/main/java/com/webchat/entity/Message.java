@@ -20,7 +20,7 @@ public class Message {
 
     @Column
     @Enumerated(EnumType.STRING)
-    private MessageType type;
+    private MessageType status;
 
     @Column
     private String content;

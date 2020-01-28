@@ -1,6 +1,5 @@
 package com.webchat.entity;
 
-import com.webchat.utils.Status;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -24,7 +23,7 @@ public class User {
     @Column
     private String email;
 
-    @Column
-    @Enumerated(EnumType.STRING)
-    private Status status;
+//    @Column
+//    @Enumerated(EnumType.STRING)
+//    private Status status;
 }

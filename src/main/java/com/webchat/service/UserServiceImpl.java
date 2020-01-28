@@ -2,7 +2,6 @@ package com.webchat.service;
 
 import com.webchat.entity.User;
 import com.webchat.repository.UserRepository;
-import com.webchat.utils.Status;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -18,10 +17,10 @@ public class UserServiceImpl implements UserService {
         this.userRepository = userRepository;
     }
 
-    @Override
-    public List<User> getUsersListOnline() {
-        return userRepository.getUserListByStatus(Status.ONLINE);
-    }
+//    @Override
+//    public List<User> getUsersListOnline() {
+//        return userRepository.getUserListByStatus(Status.ONLINE);
+//    }
 
     @Override
     public User createUser(User user) {

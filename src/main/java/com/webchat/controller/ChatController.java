@@ -3,20 +3,18 @@ package com.webchat.controller;
 import com.webchat.entity.Message;
 import com.webchat.entity.User;
 import com.webchat.service.UserService;
-import com.webchat.utils.MessageType;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
-import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
-import java.util.Objects;
+import java.util.Map;
 
 @Slf4j
-@Controller
+@RestController
 public class ChatController {
 
     private UserService userService;
@@ -29,28 +27,24 @@ public class ChatController {
     @MessageMapping("/chat.sendMessage")
     @SendTo("/topic/public")
     public Message sendMessage(@Payload Message chatMessage) {
-        Message message = new Message();
-        message.setContent("тратата");
-        message.setSender("тратата47");
-        message.setType(MessageType.CHAT);
-        return message;
-//        return chatMessage; TODO
+        // здесь сохранять нужно в бд сообщение TODO
+        return chatMessage;
     }
 
     @MessageMapping("/chat.addUser")
     @SendTo("/topic/public")
     public Message addUser(@Payload Message chatMessage, SimpMessageHeaderAccessor headerAccessor) {
-        Objects.requireNonNull(headerAccessor.getSessionAttributes()).put("username", chatMessage.getSender());
-        User user = new User();
-        user.setUserName(chatMessage.getSender());
-        userService.createUser(user);
-        log.info("chatMessage.getSender(): " + chatMessage.getSender());
+        Map<String, Object> sessionAttributes = headerAccessor.getSessionAttributes();
+        sessionAttributes.put("username", chatMessage.getSender());
+        sessionAttributes.forEach((s, o) -> log.info("это мне нужно" + s + o));
+        createUser(chatMessage);
         return chatMessage;
     }
 
-    @MessageMapping("/chat.getUsersOnline")
-    @SendTo("/topic/public")
-    public List<User> getUsersOnline() {
-        return userService.getUsersListOnline();
+    private void createUser(Message chatMessage) {
+        User user = new User();
+        user.setUserName(chatMessage.getSender());
+        userService.createUser(user);
+        log.info("Создание пользователя " + chatMessage.getSender());
     }
 }

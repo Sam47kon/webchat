@@ -38,7 +38,7 @@ public class WebSocketEventListener {
             log.info("Пользователь вышел: " + username);
 
             Message chatMessage = new Message();
-            chatMessage.setType(MessageType.LEAVE);
+            chatMessage.setStatus(MessageType.LEAVE);
             chatMessage.setSender(username);
 
             messagingTemplate.convertAndSend("/topic/public", chatMessage);

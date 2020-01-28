@@ -10,7 +10,7 @@ let connectingElement = document.querySelector('.connecting');
 let userListArea = document.querySelector('#userListArea');
 
 let stompClient = null;
-let username = null;
+let userName = null;
 
 let colors = [
     '#2196F3', '#32c787', '#00BCD4', '#ff5652',
@@ -18,9 +18,9 @@ let colors = [
 ];
 
 function connect(event) {
-    username = document.querySelector('#name').value.trim();
+    userName = document.querySelector('#userName').value.trim();
 
-    if (username) {
+    if (userName) {
         usernamePage.classList.add('hidden');
         chatPage.classList.remove('hidden');
 
@@ -37,7 +37,7 @@ function onConnected() {
     stompClient.subscribe('/topic/public', onMessageReceived);
 
     // Tell your username to the server
-    stompClient.send("/app/chat.addUser", {}, JSON.stringify({sender: username, type: 'JOIN'}));
+    stompClient.send("/app/chat.addUser", {}, JSON.stringify({sender: userName, status: 'JOIN'}));
 
     connectingElement.classList.add('hidden');
 }
@@ -52,9 +52,9 @@ function sendMessage(event) {
 
     if (messageContent && stompClient) {
         let chatMessage = {
-            sender: username,
+            sender: userName,
             content: messageInput.value,
-            type: 'CHAT'
+            status: 'CHAT'
         };
 
         stompClient.send("/app/chat.sendMessage", {}, JSON.stringify(chatMessage));
@@ -68,17 +68,22 @@ function onMessageReceived(payload) {
 
     let messageElement = document.createElement('li');
 
-    if (message.type === 'JOIN') {
+    if (message.status === 'JOIN') {
         messageElement.classList.add('event-message');
         message.content = message.sender + ' joined!';
-    } else if (message.type === 'LEAVE') {
+
+    } else if (message.status === 'LEAVE') {
         messageElement.classList.add('event-message');
         message.content = message.sender + ' left!';
+
     } else {
         messageElement.classList.add('chat-message');
 
         let avatarElement = document.createElement('i');
         let avatarText = document.createTextNode(message.sender[0]);
+        console.log("message sender = " + message.sender);
+        console.log("message status = " + message.status);
+        console.log("message content = " + message.content);
         avatarElement.appendChild(avatarText);
         avatarElement.style['background-color'] = getAvatarColor(message.sender);
 
@@ -108,21 +113,6 @@ function getAvatarColor(messageSender) {
 
     let index = Math.abs(hash % colors.length);
     return colors[index];
-}
-
-//TODO
-function getUsersOnline(event) {
-    let userList = stompClient.send("/chat.getUsersOnline");
-    console.log("get 47: " + userList.get());
-    console.log("size 47: " + userList.size());
-
-
-    let tr = document.createElement('tr');
-    let td = document.createElement('td');
-
-    // userListArea
-
-
 }
 
 usernameForm.addEventListener('submit', connect, true);

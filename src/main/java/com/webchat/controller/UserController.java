@@ -21,10 +21,10 @@ public class UserController {
         this.userService = userService;
     }
 
-    @GetMapping(value = "/online")
-    public ResponseEntity<List<User>> getUsersOnline() {
-        return ResponseEntity.ok().body(userService.getUsersListOnline());
-    }
+//    @GetMapping(value = "/online")
+//    public ResponseEntity<List<User>> getUsersOnline() {
+//        return ResponseEntity.ok().body(userService.getUsersListOnline());
+//    }
 
     @GetMapping()
     public ResponseEntity<List<User>> getUsersList() {
