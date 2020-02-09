@@ -1,7 +1,7 @@
 package com.webchat.listener;
 
-import com.webchat.entity.Message;
-import com.webchat.utils.MessageType;
+import com.webchat.model.ModelMessage;
+import com.webchat.utils.MessageStatus;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
@@ -37,11 +37,11 @@ public class WebSocketEventListener {
         if (username != null) {
             log.info("Пользователь вышел: " + username);
 
-            Message chatMessage = new Message();
-            chatMessage.setStatus(MessageType.LEAVE);
-            chatMessage.setSender(username);
+            ModelMessage modelMessage = new ModelMessage();
+            modelMessage.setStatus(MessageStatus.LEAVE);
+            modelMessage.setSender(username);
 
-            messagingTemplate.convertAndSend("/topic/public", chatMessage);
+            messagingTemplate.convertAndSend("/topic/public", modelMessage);
         }
     }
 }

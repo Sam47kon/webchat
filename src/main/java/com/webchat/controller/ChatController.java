@@ -1,7 +1,8 @@
 package com.webchat.controller;
 
-import com.webchat.entity.Message;
 import com.webchat.entity.User;
+import com.webchat.model.ModelMessage;
+import com.webchat.service.MessageService;
 import com.webchat.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +12,7 @@ import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
 import java.util.Map;
 
 @Slf4j
@@ -18,33 +20,36 @@ import java.util.Map;
 public class ChatController {
 
     private UserService userService;
+    private MessageService messageService;
 
     @Autowired
-    public ChatController(UserService userService) {
+    public ChatController(UserService userService, MessageService messageService) {
         this.userService = userService;
+        this.messageService = messageService;
     }
 
     @MessageMapping("/chat.sendMessage")
     @SendTo("/topic/public")
-    public Message sendMessage(@Payload Message chatMessage) {
-        // здесь сохранять нужно в бд сообщение TODO
-        return chatMessage;
+    public ModelMessage sendMessage(@Payload ModelMessage modelMessage) {
+        messageService.createMessage(modelMessage);
+        return modelMessage;
     }
 
     @MessageMapping("/chat.addUser")
     @SendTo("/topic/public")
-    public Message addUser(@Payload Message chatMessage, SimpMessageHeaderAccessor headerAccessor) {
+    public ModelMessage addUser(@Payload ModelMessage modelMessage, SimpMessageHeaderAccessor headerAccessor) {
         Map<String, Object> sessionAttributes = headerAccessor.getSessionAttributes();
-        sessionAttributes.put("username", chatMessage.getSender());
-        sessionAttributes.forEach((s, o) -> log.info("это мне нужно" + s + o));
-        createUser(chatMessage);
-        return chatMessage;
+        assert sessionAttributes != null;
+        sessionAttributes.put("username", modelMessage.getSender());
+        sessionAttributes.put("email", modelMessage.getEmail());
+        sessionAttributes.forEach((s, o) -> log.info("sessionAttributes: " + s + ": " + o));
+        userService.createUser(modelMessage);
+        return modelMessage;
     }
 
-    private void createUser(Message chatMessage) {
-        User user = new User();
-        user.setUserName(chatMessage.getSender());
-        userService.createUser(user);
-        log.info("Создание пользователя " + chatMessage.getSender());
+    @MessageMapping("/chat.getUsers")
+    @SendTo("/topic/users")
+    public List<User> getUsers() {
+        return userService.getUsersList();
     }
 }

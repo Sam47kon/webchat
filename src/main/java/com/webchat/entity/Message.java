@@ -1,30 +1,22 @@
 package com.webchat.entity;
 
-import com.webchat.utils.MessageType;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Table;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@EqualsAndHashCode(callSuper = true)
 @Entity
 @Table(name = "message")
-public class Message {
+public class Message extends BaseEntity {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    @Column
-    @Enumerated(EnumType.STRING)
-    private MessageType status;
-
-    @Column
-    private String content;
-
-    @Column
-    private String sender;
+    @Column(name = "text")
+    private String text;
 }

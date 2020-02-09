@@ -17,7 +17,13 @@
         <form id="usernameForm" name="userNameForm">
             <div class="form-group">
                 <label for="userName"> </label>
-                <input type="text" id="userName" placeholder="Введите Ваше имя..." autocomplete="off" class="form-control"/>
+                <input type="text" id="userName" placeholder="Введите Ваше Имя..." autocomplete="off"
+                       class="form-control"/>
+            </div>
+            <div class="form-group">
+                <label for="userEmail"> </label>
+                <input type="text" id="userEmail" placeholder="Введите Ваш Email..." autocomplete="off"
+                       class="form-control"/>
             </div>
             <div class="form-group">
                 <button type="submit" class="accent username-submit">Start Chatting</button>
@@ -37,7 +43,7 @@
         <ul id="messageArea">
 
         </ul>
-        <form id="messageForm" name="messageForm" nameForm="messageForm">
+        <form id="messageForm" name="messageForm">
             <div class="form-group">
                 <div class="input-group clearfix">
                     <label for="message"></label>
@@ -51,16 +57,14 @@
 
     <div>
         <div class="user-list-container">
-            <table id="userListArea">
+            <table>
                 <thead>
-
                 <tr>
                     <td> Имя пользователя</td>
                     <td> Статус</td>
                 </tr>
                 </thead>
-                <tbody id="userList">
-
+                <tbody id="userListArea">
                 <!--                <tr>-->
                 <!--                    <td> имя</td>-->
                 <!--                    <td> Емэил11</td>-->

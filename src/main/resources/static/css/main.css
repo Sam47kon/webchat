@@ -306,4 +306,5 @@ button.accent {
     display: inline-block;
     vertical-align: middle;
     position: relative;
+    scroll-padding-top: auto;
 }

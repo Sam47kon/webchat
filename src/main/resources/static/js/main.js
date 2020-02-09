@@ -11,6 +11,7 @@ let userListArea = document.querySelector('#userListArea');
 
 let stompClient = null;
 let userName = null;
+let userEmail = null;
 
 let colors = [
     '#2196F3', '#32c787', '#00BCD4', '#ff5652',
@@ -19,6 +20,7 @@ let colors = [
 
 function connect(event) {
     userName = document.querySelector('#userName').value.trim();
+    userEmail = document.querySelector('#userEmail').value.trim();
 
     if (userName) {
         usernamePage.classList.add('hidden');
@@ -37,9 +39,11 @@ function onConnected() {
     stompClient.subscribe('/topic/public', onMessageReceived);
 
     // Tell your username to the server
-    stompClient.send("/app/chat.addUser", {}, JSON.stringify({sender: userName, status: 'JOIN'}));
+    stompClient.send("/app/chat.addUser", {}, JSON.stringify({sender: userName, email: userEmail, status: 'JOIN'}));
 
     connectingElement.classList.add('hidden');
+    stompClient.subscribe('/topic/users', getUserList);
+    stompClient.send("/app/chat.getUsers", {}, {});
 }
 
 function onError(error) {
@@ -53,6 +57,7 @@ function sendMessage(event) {
     if (messageContent && stompClient) {
         let chatMessage = {
             sender: userName,
+            email: userEmail,
             content: messageInput.value,
             status: 'CHAT'
         };
@@ -70,20 +75,21 @@ function onMessageReceived(payload) {
 
     if (message.status === 'JOIN') {
         messageElement.classList.add('event-message');
-        message.content = message.sender + ' joined!';
+        message.content = message.sender + ' присоединился(ась) к чату!';
 
     } else if (message.status === 'LEAVE') {
         messageElement.classList.add('event-message');
-        message.content = message.sender + ' left!';
+        message.content = message.sender + ' покинул(а) чат!';
 
     } else {
         messageElement.classList.add('chat-message');
 
         let avatarElement = document.createElement('i');
-        let avatarText = document.createTextNode(message.sender[0]);
-        console.log("message sender = " + message.sender);
-        console.log("message status = " + message.status);
-        console.log("message content = " + message.content);
+        let avatarText = document.createTextNode(message.sender[0]); // первая буква имени на аватарке
+        console.log("sender = " + message.sender +
+            " email = " + message.email +
+            " status = " + message.status +
+            " content = " + message.content);
         avatarElement.appendChild(avatarText);
         avatarElement.style['background-color'] = getAvatarColor(message.sender);
 
@@ -110,9 +116,29 @@ function getAvatarColor(messageSender) {
     for (let i = 0; i < messageSender.length; i++) {
         hash = 31 * hash + messageSender.charCodeAt(i);
     }
-
     let index = Math.abs(hash % colors.length);
     return colors[index];
+}
+
+function getUserList(payload) { // TODO неверно работает список, переделать после фикса на ОНЛАЙН
+    let listUsers = JSON.parse(payload.body); // получаем список всех пользователей
+    for (let i = 0; i <= listUsers.length; i++) {
+        let tableRowElement = document.createElement('tr');
+
+        let userNameElement = document.createElement('td');
+        let userNameText = document.createTextNode(listUsers[i].userName); // имя
+
+        let userEmailElement = document.createElement('td');
+        let userEmailText = document.createTextNode(listUsers[i].email); // email
+
+        userNameElement.appendChild(userNameText);
+        userEmailElement.appendChild(userEmailText);
+        tableRowElement.appendChild(userNameElement);
+        tableRowElement.appendChild(userEmailElement);
+
+        userListArea.appendChild(tableRowElement);
+    }
+    // userListArea.scrollTop = userListArea.scrollHeight;
 }
 
 usernameForm.addEventListener('submit', connect, true);

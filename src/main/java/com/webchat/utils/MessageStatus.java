@@ -1,5 +1,5 @@
 package com.webchat.utils;
 
-public enum MessageType {
+public enum MessageStatus {
     CHAT, JOIN, LEAVE
 }
