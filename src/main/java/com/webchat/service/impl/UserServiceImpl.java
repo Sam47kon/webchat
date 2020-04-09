@@ -29,10 +29,10 @@ public class UserServiceImpl implements UserService {
     @Override
     public User createUser(ModelMessage modelMessage) {
         User user = new User();
-        user.setUserName(modelMessage.getSender());
+        user.setName(modelMessage.getSender());
         user.setEmail(modelMessage.getEmail());
         log.info("Создание пользователя: " +
-                "name: \"" + user.getUserName() +
+                "name: \"" + user.getName() +
                 "\", email: \"" + user.getEmail() + "\"");
         return userRepository.save(user);
     }

@@ -7,7 +7,7 @@ let messageForm = document.querySelector('#messageForm');
 let messageInput = document.querySelector('#message');
 let messageArea = document.querySelector('#messageArea');
 let connectingElement = document.querySelector('.connecting');
-let userListArea = document.querySelector('#userListArea');
+let userListTable = document.querySelector('#userListTable');
 
 let stompClient = null;
 let userName = null;
@@ -80,6 +80,7 @@ function onMessageReceived(payload) {
     } else if (message.status === 'LEAVE') {
         messageElement.classList.add('event-message');
         message.content = message.sender + ' покинул(а) чат!';
+        stompClient.send("/app") // TODO статус онлайн
 
     } else {
         messageElement.classList.add('chat-message');
@@ -120,25 +121,38 @@ function getAvatarColor(messageSender) {
     return colors[index];
 }
 
-function getUserList(payload) { // TODO неверно работает список, переделать после фикса на ОНЛАЙН
+function getUserList(payload) {
     let listUsers = JSON.parse(payload.body); // получаем список всех пользователей
-    for (let i = 0; i <= listUsers.length; i++) {
+
+    let oldTbody = document.getElementById('userListTBody');
+    userListTable.removeChild(oldTbody); // удаление старого списка
+
+    let tbody = document.createElement('tbody'); // создание нового списка
+    tbody.setAttribute('id', 'userListTBody');
+
+    for (let i = 0; i < listUsers.length; i++) {
         let tableRowElement = document.createElement('tr');
 
+        let userIdElement = document.createElement('td');
+        let userIdText = document.createTextNode(listUsers[i].id); // id
+
         let userNameElement = document.createElement('td');
-        let userNameText = document.createTextNode(listUsers[i].userName); // имя
+        let userNameText = document.createTextNode(listUsers[i].name); // имя
 
         let userEmailElement = document.createElement('td');
         let userEmailText = document.createTextNode(listUsers[i].email); // email
 
+        userIdElement.appendChild(userIdText);
         userNameElement.appendChild(userNameText);
         userEmailElement.appendChild(userEmailText);
+        tableRowElement.appendChild(userIdElement);
         tableRowElement.appendChild(userNameElement);
         tableRowElement.appendChild(userEmailElement);
 
-        userListArea.appendChild(tableRowElement);
+        tbody.appendChild(tableRowElement);
     }
-    // userListArea.scrollTop = userListArea.scrollHeight;
+    userListTable.appendChild(tbody);
+    userListTable.scrollTop = userListTable.scrollHeight;
 }
 
 usernameForm.addEventListener('submit', connect, true);
